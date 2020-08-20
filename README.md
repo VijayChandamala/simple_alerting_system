@@ -56,5 +56,5 @@ echo "my_container is not running, sending an alert";
 { echo "To: alert@example.com"; echo "Subject: My container alert"; echo "My container is not running"; } | sudo ssmtp example@gmail.com,reciepient2@gmail.com;
 fi
 ```
-### above script sends a mail to example@gmail.com and reciepient2@gmail.com (you can add multiple reciepients seperated by a comma
+### above script sends a mail to example@gmail.com and reciepient2@gmail.com (you can add multiple reciepients seperated by a comma)
 
