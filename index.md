@@ -1,37 +1,60 @@
-## Welcome to GitHub Pages
+# Simple alert system using smtp and shell script
 
-You can use the [editor on GitHub](https://github.com/VijayChandamala/simple_alerting_system/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+## Step 1
+-------------------
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### install ssmtp
 
-### Markdown
+```sudo apt-get update && sudo apt install ssmtp -y```
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Step 2
+------------------
 
-```markdown
-Syntax highlighted code block
+### configure smtp to use your gmail as mail server
 
-# Header 1
-## Header 2
-### Header 3
+```sudo vim /etc/ssmtp/ssmtp.conf```
 
-- Bulleted
-- List
+### example config:
 
-1. Numbered
-2. List
+```# Config file for sSMTP sendmail
+#
+# The person who gets all mail for userids < 1000
+# Make this empty to disable rewriting.
+root=postmaster
 
-**Bold** and _Italic_ and `Code` text
+# The place where the mail goes. The actual machine name is required no 
+# MX records are consulted. Commonly mailhosts are named mail.domain.com
+mailhub=mail.google.com:587
+useSTARTTLS=YES
+AuthUser=example@gmail.com
+AuthPass=example
+TLS_CA_File=/etc/pki/tls/certs/ca-bundle.crt
 
-[Link](url) and ![Image](src)
+# Where will the mail seem to come from?
+#rewriteDomain=
+
+# The full hostname
+hostname=example.com
+
+# Are users allowed to set their own From: address?
+ YES - Allow the user to specify their own From: address
+ NO - Use the system generated From: address
+ FromLineOverride=YES
+ ```
+ 
+ ## Step 3
+ 
+ ### use smtp command in shell script to send alert mails
+ 
+ ```#!/bin/bash  
+
+if [ "$( docker ps | grep -o 'my_container' )" == "my_container" ];
+then
+echo "my_container is running"
+else
+echo "my_container is not running, sending an alert";
+{ echo "To: alert@example.com"; echo "Subject: My container alert"; echo "My container is not running"; } | sudo ssmtp example@gmail.com,reciepient2@gmail.com;
+fi
 ```
+### above script sends a mail to example@gmail.com and reciepient2@gmail.com (you can add multiple reciepients seperated by a comma)
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/VijayChandamala/simple_alerting_system/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
